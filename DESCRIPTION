@@ -1,6 +1,6 @@
 Package: tidyplots
 Title: Tidy Plots for Scientific Papers
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: 
     person("Jan Broder", "Engler", , "broder.engler@gmail.com", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-3169-2076"))
@@ -8,9 +8,9 @@ Description: The goal of 'tidyplots' is to streamline the creation of publicatio
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-Imports: cli, dplyr, forcats, ggbeeswarm, ggplot2, ggpubr, ggrastr,
-        ggrepel, glue, Hmisc, htmltools, lifecycle, patchwork, purrr,
-        rlang, scales, stringr, tidyr, tidyselect
+Imports: cli, dplyr, forcats, ggbeeswarm, ggplot2 (>= 3.5.0), ggpubr,
+        ggrastr, ggrepel, glue, Hmisc, htmltools, lifecycle, patchwork,
+        purrr, rlang, scales, stringr, tidyr, tidyselect
 Depends: R (>= 2.10)
 LazyData: true
 URL: https://github.com/jbengler/tidyplots,
@@ -20,9 +20,9 @@ Suggests: knitr, rmarkdown, testthat (>= 3.0.0), vdiffr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2024-11-06 23:27:30 UTC; janbroderengler
+Packaged: 2024-12-16 17:53:51 UTC; janbroderengler
 Author: Jan Broder Engler [aut, cre, cph]
     (<https://orcid.org/0000-0002-3169-2076>)
 Maintainer: Jan Broder Engler <broder.engler@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-11-08 15:00:02 UTC
+Date/Publication: 2024-12-16 18:10:02 UTC

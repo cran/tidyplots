@@ -8,7 +8,9 @@
 #'   * A `function` to subset the plot data. See `filter_rows()` and friends.
 #'
 #'   * A `data.frame` to override the plot data.
-#' @param dodge_width For adjusting the distance between grouped objects. Defaults to `0.8`.
+#' @param dodge_width For adjusting the distance between grouped objects. Defaults
+#' to `0.8` for plots with at least one discrete axis and `0` for plots with two
+#' continuous axes.
 #' @param preserve Should dodging preserve the `"total"` width of all elements at
 #'   a position, or the width of a `"single"` element?
 #' @param rasterize If `FALSE` (the default) the layer will be constructed of
@@ -116,13 +118,13 @@ ff_errorbar <- function(.fun.data) {
 #'   add_sem_errorbar(linewidth = 1)
 #'
 #' @export
-add_sem_errorbar <- ff_errorbar(.fun.data = ggplot2::mean_se)
+add_sem_errorbar <- ff_errorbar(.fun.data = mean_se)
 #' @rdname add_sem_errorbar
 #' @export
 add_range_errorbar <- ff_errorbar(.fun.data = min_max)
 #' @rdname add_sem_errorbar
 #' @export
-add_sd_errorbar <- ff_errorbar(.fun.data = mean_sdl)
+add_sd_errorbar <- ff_errorbar(.fun.data = mean_sd)
 #' @rdname add_sem_errorbar
 #' @export
 add_ci95_errorbar <- ff_errorbar(.fun.data = mean_cl_boot)
@@ -152,45 +154,45 @@ ff_ribbon <- function(.fun.data) {
 #' @examples
 #' # Standard error of the mean
 #' time_course %>%
-#'   tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+#'   tidyplot(x = day, y = score, color = treatment) %>%
 #'   add_mean_line() %>%
 #'   add_sem_ribbon()
 #'
 #' # Range from minimum to maximum value
 #' time_course %>%
-#'   tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+#'   tidyplot(x = day, y = score, color = treatment) %>%
 #'   add_mean_line() %>%
 #'   add_range_ribbon()
 #'
 #' # Standard deviation
 #' time_course %>%
-#'   tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+#'   tidyplot(x = day, y = score, color = treatment) %>%
 #'   add_mean_line() %>%
 #'   add_sd_ribbon()
 #'
 #' # 95% confidence interval
 #' time_course %>%
-#'   tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+#'   tidyplot(x = day, y = score, color = treatment) %>%
 #'   add_mean_line() %>%
 #'   add_ci95_ribbon()
 #'
 #' # Changing arguments: alpha
 #' time_course %>%
-#'   tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+#'   tidyplot(x = day, y = score, color = treatment) %>%
 #'   add_mean_line() %>%
 #'   add_sem_ribbon(alpha = 0.7)
 #'
 #' @export
-add_sem_ribbon <- ff_ribbon(.fun.data = ggplot2::mean_se)
+add_sem_ribbon <- ff_ribbon(.fun.data = mean_se)
 #' @rdname add_sem_ribbon
 #' @export
 add_range_ribbon <- ff_ribbon(.fun.data = min_max)
 #' @rdname add_sem_ribbon
 #' @export
-add_sd_ribbon <- ff_ribbon(.fun.data = ggplot2::mean_sdl)
+add_sd_ribbon <- ff_ribbon(.fun.data = mean_sd)
 #' @rdname add_sem_ribbon
 #' @export
-add_ci95_ribbon <- ff_ribbon(.fun.data = ggplot2::mean_cl_boot)
+add_ci95_ribbon <- ff_ribbon(.fun.data = mean_cl_boot)
 
 
 ## Bar function factory

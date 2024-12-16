@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/jbengler/tidyplots/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jbengler/tidyplots/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/tidyplots)](https://CRAN.R-project.org/package=tidyplots)
 <!-- badges: end -->
 
 The goal of `tidyplots` is to streamline the creation of
@@ -94,7 +96,7 @@ study %>%
 
 ``` r
 time_course %>%
-  tidyplot(x = day, y = score, color = treatment, dodge_width = 0) %>%
+  tidyplot(x = day, y = score, color = treatment) %>%
   add_mean_line() %>%
   add_mean_dot() %>%
   add_sem_ribbon()

@@ -91,6 +91,12 @@ new_color_scheme <- function(x, name = "Untitled color scheme", reverse = FALSE)
 #' ```{r echo=FALSE}
 #' print(colors_discrete_candy, return_html = TRUE)
 #' ```
+#' ```{r eval=FALSE}
+#' colors_discrete_alger
+#' ```
+#' ```{r echo=FALSE}
+#' print(colors_discrete_alger, return_html = TRUE)
+#' ```
 #'
 #' @md
 #' @export
@@ -119,6 +125,10 @@ colors_discrete_metro <- new_color_scheme(c("#4DACD6","#4FAE62","#F6C54D","#E37D
 #' @rdname colors_discrete_friendly
 #' @export
 colors_discrete_candy <- new_color_scheme(c("#9b5de5", "#f15bb5", "#fee440", "#00bbf9", "#00f5d4"), "colors_discrete_candy")
+#' @rdname colors_discrete_friendly
+#' @export
+colors_discrete_alger <- new_color_scheme(c("#000000", "#1A5B5B", "#ACC8BE", "#F4AB5C", "#D1422F"), "colors_discrete_alger")
+
 
 
 #' Continuous color schemes

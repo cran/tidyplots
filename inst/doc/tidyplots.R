@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("tidyverse")
-#  install.packages("devtools")
-#  devtools::install_github("jbengler/tidyplots")
+#  install.packages("tidyplots")
 
 ## ----message=TRUE, results='markup'-------------------------------------------
 library(tidyplots)

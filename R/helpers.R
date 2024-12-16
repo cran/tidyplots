@@ -27,7 +27,7 @@ is_waiver <- function(x) inherits(x, "waiver")
 #' gg %>% as_tidyplot()
 #'
 #' @export
-as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = 0.8) {
+as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = NULL) {
   mapping <- gg$mapping
   plot <- gg
 
@@ -54,6 +54,13 @@ as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = 0.8) {
   plot$tidyplot$limits_x <- c(NULL, NULL)
   plot$tidyplot$limits_y <- c(NULL, NULL)
 
+  # dodge_width_heuristic
+  if (is_discrete(plot, "x") || is_discrete(plot, "y")) {
+    dodge_width_heuristic <- 0.8
+  } else {
+    dodge_width_heuristic <- 0
+  }
+  dodge_width <- dodge_width %||% dodge_width_heuristic
   plot$tidyplot$dodge_width <- dodge_width
 
   plot$tidyplot$named_colors <- NULL
@@ -71,7 +78,7 @@ as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = 0.8) {
   plot
 }
 
-#' Flip x and y axis
+#' Flip x and y-axis
 #' @param ... Arguments passed on to `ggplot2::coord_flip()`.
 #' @inherit common_arguments
 #' @description
@@ -244,14 +251,18 @@ format_p_value <- function(x, accuracy = 0.0001) {
 
 # internal helpers
 
+mean_se <- ggplot2::mean_se
+
 min_max <- function(x) {
   x <- stats::na.omit(x)
   data.frame(ymin = min(x), ymax = max(x))
 }
 
-mean_sdl <- function(x) {
-  dplyr::rename(data.frame(as.list(Hmisc::smean.sdl(x))),
-                y = Mean, ymin = Lower, ymax = Upper)
+mean_sd <- function(x) {
+  x <- stats::na.omit(x)
+  data.frame(y = mean(x),
+             ymin = mean(x) - stats::sd(x),
+             ymax = mean(x) + stats::sd(x))
 }
 
 mean_cl_boot <- function(x) {

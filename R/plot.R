@@ -25,7 +25,7 @@
 #'   add_mean_bar()
 #'
 #' @export
-tidyplot <- function(data, ..., width = 50, height = 50, dodge_width = 0.8) {
+tidyplot <- function(data, ..., width = 50, height = 50, dodge_width = NULL) {
   mapping <- ggplot2::aes(...)
 
   # Add .single_color column to data if `colour` and `fill` mappings are missing
@@ -53,6 +53,13 @@ tidyplot <- function(data, ..., width = 50, height = 50, dodge_width = 0.8) {
   plot$tidyplot$limits_x <- c(NULL, NULL)
   plot$tidyplot$limits_y <- c(NULL, NULL)
 
+  # dodge_width_heuristic
+  if (is_discrete(plot, "x") || is_discrete(plot, "y")) {
+    dodge_width_heuristic <- 0.8
+  } else {
+    dodge_width_heuristic <- 0
+  }
+  dodge_width <- dodge_width %||% dodge_width_heuristic
   plot$tidyplot$dodge_width <- dodge_width
 
   plot$tidyplot$named_colors <- NULL
@@ -206,10 +213,12 @@ view_plot <- function(plot, data = all_rows(), title = ggplot2::waiver(), ...) {
 #' __Handling of file dimensions.__
 #' Output file dimensions are determined according the the following precedence.
 #' 1) The `width` and `height` arguments.
-#' 2) Dimensions inferred from an incoming `plot` object with absolute dimensions.
+#' 2) Dimensions inferred from the incoming `plot` object with absolute dimensions.
 #' 3) System default device dimensions.
 #'
-#' @param width,height Dimensions of the saved plot. Defaults to `NA`.
+#' @param width,height Dimensions of the graphic device to save the plot.
+#' Defaults to `NA`. In case of `NA`, the dimensions are inferred from the
+#' incoming `plot` object (see Details).
 #' @param units Units of length. Defaults to `"mm"`.
 #' @param multiple_files Whether to save multiple pages as individual files.
 #' @inheritParams ggplot2::ggsave

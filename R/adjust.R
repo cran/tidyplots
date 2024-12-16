@@ -112,7 +112,7 @@ ff_adjust_axis <- function(axis) {
   }
 
   # Catch the rest
-  # cli::cli_alert_warning("adjust_{axis}_axis: {.pkg x axis} was not changed.")
+  # cli::cli_alert_warning("adjust_{axis}_axis: {.pkg x-axis} was not changed.")
   return(plot)
   }
 }
@@ -140,8 +140,8 @@ ff_adjust_axis <- function(axis) {
 #' animals %>%
 #'   tidyplot(x = weight, y = size, color = family) %>%
 #'   add_data_points() %>%
-#'   adjust_x_axis(title = "My new x axis title") %>%
-#'   adjust_y_axis(title = "My new y axis title")
+#'   adjust_x_axis(title = "My new x-axis title") %>%
+#'   adjust_y_axis(title = "My new y-axis title")
 #'
 #' # New titles with plotmath expressions
 #' animals %>%
@@ -229,6 +229,29 @@ adjust_size <- function(plot, width = 50, height = 50, unit = "mm") {
   plot + patchwork::plot_layout(widths = width, heights = height)
 }
 
+#' Adjust theme details
+#'
+#' This function is a wrapper around `ggplot2::theme()`. To use the required theme
+#' helper functions `ggplot2::element_blank()`, `ggplot2::element_rect()`,
+#' `ggplot2::element_line()`, and `ggplot2::element_text()` you need to either load
+#' the ggplot2 package via `library(ggplot2)` or use the `ggplot2::` prefix as shown above.
+#'
+#' @inherit common_arguments
+#' @inheritParams ggplot2::theme
+#'
+#' @examples
+#' study %>%
+#'   tidyplot(x = treatment, y = score, color = treatment) %>%
+#'   add_data_points_beeswarm() %>%
+#'   add_mean_bar(alpha = 0.4) %>%
+#'   adjust_theme_details(plot.background = ggplot2::element_rect(fill = "#FFEBFF"))
+#'
+#' @export
+adjust_theme_details <- function(plot, ...) {
+  plot +
+    ggplot2::theme(...)
+}
+
 
 #' Adjust font
 #' @inherit common_arguments
@@ -288,7 +311,9 @@ adjust_font <- function(plot, fontsize = 7, family = NULL, face = NULL, color = 
 #' @param title Legend title.
 #' @param position The position of the legend. Can be one of
 #' `c("right", "left", "bottom", "top", "none")`. Defaults to `"right"`.
+#' @param ... Arguments passed on to `ggplot2::element_text()`.
 #' @inherit common_arguments
+#' @inheritParams ggplot2::element_text
 #'
 #' @details
 #' * The `title` argument of `adjust_legend_title()` supports [plotmath expressions](https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/plotmath) to include special characters.
@@ -349,8 +374,9 @@ adjust_font <- function(plot, fontsize = 7, family = NULL, face = NULL, color = 
 #'   adjust_legend_position("none")
 #'
 #' @export
-adjust_legend_title <- function(plot, title = ggplot2::waiver()) {
-  plot %>% adjust_legend(title = title)
+adjust_legend_title <- function(plot, title = ggplot2::waiver(), fontsize = NULL, family = NULL, face = NULL, color = "black", ...) {
+  plot %>% adjust_legend(title = title) +
+    ggplot2::theme(legend.title = ggplot2::element_text(size = fontsize, family = family, face = face, colour = color, ...))
 }
 #' @rdname adjust_legend_title
 #' @export
@@ -424,7 +450,9 @@ adjust_padding <- function(plot, top = NA, right = NA, bottom = NA, left = NA, a
 #' Adjust titles and caption
 #' @param title Plot or axes title.
 #' @param caption Plot caption.
+#' @param ... Arguments passed on to `ggplot2::element_text()`.
 #' @inherit common_arguments
+#' @inheritParams ggplot2::element_text
 #'
 #' @details
 #' Adjust the plot title, axis titles and caption
@@ -465,25 +493,31 @@ adjust_padding <- function(plot, top = NA, right = NA, bottom = NA, left = NA, a
 #'   adjust_caption("$H[2]*O$")
 #'
 #' @export
-adjust_title <- function(plot, title = ggplot2::waiver()) {
-  plot %>% adjust_description(title = title)
+adjust_title <- function(plot, title = ggplot2::waiver(), fontsize = NULL, family = NULL, face = NULL, color = "black", ...) {
+  plot %>% adjust_description(title = title) +
+    ggplot2::theme(plot.title = ggplot2::element_text(size = fontsize, family = family, face = face, colour = color, ...))
 }
 #' @rdname adjust_title
 #' @export
-adjust_x_axis_title <- function(plot, title = ggplot2::waiver()) {
-  plot %>% adjust_description(x_axis_title = title)
+adjust_x_axis_title <- function(plot, title = ggplot2::waiver(), fontsize = NULL, family = NULL, face = NULL, color = "black", ...) {
+  plot %>% adjust_description(x_axis_title = title) +
+    ggplot2::theme(axis.title.x = ggplot2::element_text(size = fontsize, family = family, face = face, colour = color))
 }
 #' @rdname adjust_title
 #' @export
-adjust_y_axis_title <- function(plot, title = ggplot2::waiver()) {
-  plot %>% adjust_description(y_axis_title = title)
+adjust_y_axis_title <- function(plot, title = ggplot2::waiver(), fontsize = NULL, family = NULL, face = NULL, color = "black", ...) {
+  plot %>% adjust_description(y_axis_title = title) +
+    ggplot2::theme(axis.title.y = ggplot2::element_text(size = fontsize, family = family, face = face, colour = color))
 }
 #' @rdname adjust_title
 #' @export
-adjust_caption <- function(plot, caption = ggplot2::waiver()) {
-  plot %>% adjust_description(caption = caption)
+adjust_caption <- function(plot, caption = ggplot2::waiver(), fontsize = NULL, family = NULL, face = NULL, color = "black", ...) {
+  plot %>% adjust_description(caption = caption) +
+    ggplot2::theme(plot.caption = ggplot2::element_text(size = fontsize, family = family, face = face, colour = color))
 }
 
+
+# not exported
 adjust_description <- function(plot, title = ggplot2::waiver(), x_axis_title = ggplot2::waiver(),
                                y_axis_title = ggplot2::waiver(), legend_title = ggplot2::waiver(),
                                caption = ggplot2::waiver(), ...) {
