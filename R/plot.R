@@ -89,27 +89,27 @@ tidyplot <- function(data, ..., width = 50, height = 50, dodge_width = NULL) {
 #' # Before splitting
 #' energy %>%
 #'   dplyr::filter(year %in% c(2005, 2010, 2015, 2020)) %>%
-#'   tidyplot(y = power, color = energy_source) %>%
+#'   tidyplot(y = energy, color = energy_source) %>%
 #'   add_donut()
 #'
 #' # Split by year
 #' energy %>%
 #'   dplyr::filter(year %in% c(2005, 2010, 2015, 2020)) %>%
-#'   tidyplot(y = power, color = energy_source) %>%
+#'   tidyplot(y = energy, color = energy_source) %>%
 #'   add_donut() %>%
 #'   split_plot(by = year)
 #'
 #' # Change dimensions of subplots
 #' energy %>%
 #'   dplyr::filter(year %in% c(2005, 2010, 2015, 2020)) %>%
-#'   tidyplot(y = power, color = energy_source) %>%
+#'   tidyplot(y = energy, color = energy_source) %>%
 #'   add_donut() %>%
 #'   split_plot(by = year, widths = 15, heights = 15)
 #'
 #' # Spread plots across multiple pages
 #' energy %>%
 #'   dplyr::filter(year %in% c(2005, 2010, 2015, 2020)) %>%
-#'   tidyplot(y = power, color = energy_source) %>%
+#'   tidyplot(y = energy, color = energy_source) %>%
 #'   add_donut() %>%
 #'   split_plot(by = year, ncol = 2, nrow = 1)
 #'
@@ -221,6 +221,7 @@ view_plot <- function(plot, data = all_rows(), title = ggplot2::waiver(), ...) {
 #' incoming `plot` object (see Details).
 #' @param units Units of length. Defaults to `"mm"`.
 #' @param multiple_files Whether to save multiple pages as individual files.
+#' @param view_plot Whether to view the plot on screen after saving.
 #' @inheritParams ggplot2::ggsave
 #' @inherit common_arguments
 #'
@@ -270,7 +271,7 @@ view_plot <- function(plot, data = all_rows(), title = ggplot2::waiver(), ...) {
 #' @export
 save_plot <- function(plot = ggplot2::last_plot(), filename,
                       width = NA, height = NA, units = c("mm", "cm", "in"),
-                      multiple_files = FALSE, bg = "transparent", ...) {
+                      multiple_files = FALSE, view_plot = TRUE, bg = "transparent", ...) {
   if (!ggplot2::is.ggplot(plot) && !all(purrr::map_lgl(plot, ggplot2::is.ggplot)))
     cli::cli_abort("{.arg plot} must be a single plot or a list of plots.")
 
@@ -318,6 +319,6 @@ save_plot <- function(plot = ggplot2::last_plot(), filename,
       cli::cli_alert_success("save_plot: saved multiple plots to {.file {filenames}}")
     }
   }
-  print(input)
+  if (view_plot) print(input)
   invisible(input)
 }
