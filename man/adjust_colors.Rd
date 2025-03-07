@@ -20,7 +20,9 @@ adjust_colors(
 
 \item{saturation}{A \code{number} between \code{0} and \code{1} for the color saturation of an object. A value of \code{0} is completely desaturated (white), \code{1} is the original color.}
 
-\item{labels}{One of:
+\item{labels}{One of the options below. Please note that when \code{labels} is a
+vector, it is highly recommended to also set the \code{breaks} argument as a
+vector to protect against unintended mismatches.
 \itemize{
 \item \code{NULL} for no labels
 \item \code{waiver()} for the default labels computed by the
@@ -44,34 +46,34 @@ Adjust colors
 }
 \examples{
 # Plot without adjustments
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
-  add_data_points() \%>\%
-  add_mean_bar(alpha = 0.4) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
+  add_data_points() |>
+  add_mean_bar(alpha = 0.4) |>
   add_sem_errorbar()
 
 # Provide hex colors
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
-  add_data_points() \%>\%
-  add_mean_bar(alpha = 0.4) \%>\%
-  add_sem_errorbar() \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
+  add_data_points() |>
+  add_mean_bar(alpha = 0.4) |>
+  add_sem_errorbar() |>
   adjust_colors(new_colors = c("#644296","#F08533","#3B78B0", "#D1352C"))
 
 # Provide discrete color scheme
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
-  add_data_points() \%>\%
-  add_mean_bar(alpha = 0.4) \%>\%
-  add_sem_errorbar() \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
+  add_data_points() |>
+  add_mean_bar(alpha = 0.4) |>
+  add_sem_errorbar() |>
   adjust_colors(new_colors = colors_discrete_seaside)
 
 # Provide named vector
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
-  add_data_points() \%>\%
-  add_mean_bar(alpha = 0.4) \%>\%
-  add_sem_errorbar() \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
+  add_data_points() |>
+  add_mean_bar(alpha = 0.4) |>
+  add_sem_errorbar() |>
   adjust_colors(new_colors = c(
     "A" = "pink",
     "B" = "purple",
@@ -79,9 +81,9 @@ study \%>\%
     "D" = "blue"))
 
 # Provide continuous color scheme
-climate \%>\%
-  tidyplot(x = month, y = year, color = max_temperature) \%>\%
-  add_heatmap() \%>\%
+climate |>
+  tidyplot(x = month, y = year, color = max_temperature) |>
+  add_heatmap() |>
   adjust_colors(new_colors = colors_continuous_turbo)
 
 }

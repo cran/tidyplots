@@ -9,34 +9,34 @@
 #'
 #' @examples
 #' # Plot without adjustments
-#' study %>%
-#'   tidyplot(x = treatment, y = score, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
+#' study |>
+#'   tidyplot(x = treatment, y = score, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
 #'   add_sem_errorbar()
 #'
 #' # Provide hex colors
-#' study %>%
-#'   tidyplot(x = treatment, y = score, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
-#'   add_sem_errorbar() %>%
+#' study |>
+#'   tidyplot(x = treatment, y = score, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
+#'   add_sem_errorbar() |>
 #'   adjust_colors(new_colors = c("#644296","#F08533","#3B78B0", "#D1352C"))
 #'
 #' # Provide discrete color scheme
-#' study %>%
-#'   tidyplot(x = treatment, y = score, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
-#'   add_sem_errorbar() %>%
+#' study |>
+#'   tidyplot(x = treatment, y = score, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
+#'   add_sem_errorbar() |>
 #'   adjust_colors(new_colors = colors_discrete_seaside)
 #'
 #' # Provide named vector
-#' study %>%
-#'   tidyplot(x = treatment, y = score, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
-#'   add_sem_errorbar() %>%
+#' study |>
+#'   tidyplot(x = treatment, y = score, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
+#'   add_sem_errorbar() |>
 #'   adjust_colors(new_colors = c(
 #'     "A" = "pink",
 #'     "B" = "purple",
@@ -44,9 +44,9 @@
 #'     "D" = "blue"))
 #'
 #' # Provide continuous color scheme
-#' climate %>%
-#'   tidyplot(x = month, y = year, color = max_temperature) %>%
-#'   add_heatmap() %>%
+#' climate |>
+#'   tidyplot(x = month, y = year, color = max_temperature) |>
+#'   add_heatmap() |>
 #'   adjust_colors(new_colors = colors_continuous_turbo)
 #'
 #' @export
@@ -63,7 +63,11 @@ adjust_colors <- function(plot, new_colors = NULL,
     # Default colors
     if (is.null(new_colors)) new_colors <- colors_discrete_friendly
 
+    # Strip tidycolor class
+    new_colors <- strip_tidycolor_class(new_colors)
+
     # Are enough new_colors provided?
+    color_var <- get_variable(plot, "colour")
     named_vector <- FALSE
     n_ratio <- 0
     if (!is.null(names(new_colors))) {
@@ -73,11 +77,10 @@ adjust_colors <- function(plot, new_colors = NULL,
     } else {
       out$tidyplot$named_colors <- NULL
       n_provided <- length(new_colors)
-      color_var <- get_variable(plot, "colour")
       n_requested <-
-        dplyr::pull(plot$data, color_var) %>%
-        unique() %>%
-        length
+        dplyr::pull(plot$data, color_var) |>
+        unique() |>
+        length()
       n_ratio <- n_provided / n_requested
     }
 
@@ -87,6 +90,15 @@ adjust_colors <- function(plot, new_colors = NULL,
       if (n_ratio > 1) {
         # cli::cli_alert_info("adjust_colors: Too many colors. {n_provided} colors provided, but only {n_requested} needed.")
         new_colors <- downsample_vector(new_colors, n_requested, downsample = downsample)
+      }
+
+      # if the variable mapped to color is a factor, drop unused factor levels
+      # scale_*_manual() requires a color for each factor level, including unused ones
+      if (is.factor(out$data[[color_var]])) {
+        new_data <-
+          out$data |>
+          dplyr::mutate("{color_var}" := forcats::fct_drop(.data[[color_var]]))
+        out <- out %+% new_data
       }
 
       suppressMessages(out <- out + ggplot2::scale_color_manual(values = new_colors, drop = FALSE, labels = labels, ...))

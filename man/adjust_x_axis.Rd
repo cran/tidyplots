@@ -50,7 +50,9 @@ Note that for position scales, limits are provided after scale expansion.
 Also accepts rlang \link[rlang:as_function]{lambda} function notation.
 }}
 
-\item{labels}{One of:
+\item{labels}{One of the options below. Please note that when \code{labels} is a
+vector, it is highly recommended to also set the \code{breaks} argument as a
+vector to protect against unintended mismatches.
 \itemize{
 \item \code{NULL} for no labels
 \item \code{waiver()} for the default labels computed by the
@@ -101,50 +103,50 @@ See examples and \href{https://jbengler.github.io/tidyplots/articles/Advanced-pl
 }
 \examples{
 # Plot without adjustments
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
   add_data_points()
 
 # New titles
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(title = "My new x-axis title") \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(title = "My new x-axis title") |>
   adjust_y_axis(title = "My new y-axis title")
 
 # New titles with plotmath expressions
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(title = "$H[2]*O$") \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(title = "$H[2]*O$") |>
   adjust_y_axis(title = "$E==m*c^{2}$")
 
 # Axes limits
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(limits = c(-1000, 4000)) \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(limits = c(-1000, 4000)) |>
   adjust_y_axis(limits = c(-200, 600))
 
 # Rotate labels
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(rotate_labels = 90) \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(rotate_labels = 90) |>
   adjust_y_axis(rotate_labels = 90)
 
 # Increase plot area padding
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(padding = c(0.2, 0.2)) \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(padding = c(0.2, 0.2)) |>
   adjust_y_axis(padding = c(0.2, 0.2))
 
 # Scale transformation
-animals \%>\%
-  tidyplot(x = weight, y = size, color = family) \%>\%
-  add_data_points() \%>\%
-  adjust_x_axis(transform = "log10") \%>\%
+animals |>
+  tidyplot(x = weight, y = size, color = family) |>
+  add_data_points() |>
+  adjust_x_axis(transform = "log10") |>
   adjust_y_axis(transform = "log2")
 
 }

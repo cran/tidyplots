@@ -11,73 +11,6 @@ is_waiver <- function(x) inherits(x, "waiver")
 #' @export
 `%>%` <- dplyr::`%>%`
 
-#' Convert ggplot to tidyplot
-#'
-#' @param gg A ggplot.
-#' @inherit common_arguments
-#'
-#' @examples
-#' gg <-
-#'   study %>%
-#'   ggplot2::ggplot(ggplot2::aes(x = treatment, y = score, color = treatment)) +
-#'   ggplot2::geom_point()
-#'
-#' gg
-#'
-#' gg %>% as_tidyplot()
-#'
-#' @export
-as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = NULL) {
-  mapping <- gg$mapping
-  plot <- gg
-
-  # Add .single_color column to data if `colour` and `fill` mappings are missing
-  single_color_plot <- FALSE
-  if(!"colour" %in% names(mapping) && !"fill" %in% names(mapping)) {
-    data$.single_color <- TRUE
-    mapping$colour <- ggplot2::aes(colour = .single_color)[[1]]
-    single_color_plot <- TRUE
-  }
-
-  # Align `colour` and `fill` mappings
-  if("colour" %in% names(mapping) && !"fill" %in% names(mapping)) mapping$fill <- mapping$colour
-  if("fill" %in% names(mapping) && !"colour" %in% names(mapping)) mapping$colour <- mapping$fill
-
-  plot$mapping <- mapping
-  class(plot) <- c("tidyplot", class(plot))
-
-  plot$tidyplot$mapping <- extract_mapping(plot)
-
-  plot$tidyplot$padding_x <- c(0.05, 0.05)
-  plot$tidyplot$padding_y <- c(0.05, 0.05)
-
-  plot$tidyplot$limits_x <- c(NULL, NULL)
-  plot$tidyplot$limits_y <- c(NULL, NULL)
-
-  # dodge_width_heuristic
-  if (is_discrete(plot, "x") || is_discrete(plot, "y")) {
-    dodge_width_heuristic <- 0.8
-  } else {
-    dodge_width_heuristic <- 0
-  }
-  dodge_width <- dodge_width %||% dodge_width_heuristic
-  plot$tidyplot$dodge_width <- dodge_width
-
-  plot$tidyplot$named_colors <- NULL
-
-  plot <- plot %>%
-    theme_tidyplot() %>%
-    adjust_x_axis() %>%
-    adjust_y_axis() %>%
-    adjust_colors() %>%
-    adjust_size(width = width, height = height)
-
-  if (single_color_plot)
-    plot <- plot %>% remove_legend()
-
-  plot
-}
-
 #' Flip x and y-axis
 #' @param ... Arguments passed on to `ggplot2::coord_flip()`.
 #' @inherit common_arguments
@@ -89,27 +22,27 @@ as_tidyplot <- function(gg, width = 50, height = 50, dodge_width = NULL) {
 #' require to set the `orientation` argument to `"y"`.
 #'
 #' @examples
-#' study %>%
-#'   tidyplot(x = treatment, y = score, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
-#'   add_sem_errorbar() %>%
+#' study |>
+#'   tidyplot(x = treatment, y = score, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
+#'   add_sem_errorbar() |>
 #'   flip_plot()
 #'
-#' energy %>%
-#'   tidyplot(x = year, y = energy, color = energy_type) %>%
-#'   add_barstack_absolute() %>%
+#' energy |>
+#'   tidyplot(x = year, y = energy, color = energy_type) |>
+#'   add_barstack_absolute() |>
 #'   flip_plot()
 #'
 #' # Better solutions without `flip_plot()`
-#' study %>%
-#'   tidyplot(x = score, y = treatment, color = treatment) %>%
-#'   add_data_points() %>%
-#'   add_mean_bar(alpha = 0.4) %>%
+#' study |>
+#'   tidyplot(x = score, y = treatment, color = treatment) |>
+#'   add_data_points() |>
+#'   add_mean_bar(alpha = 0.4) |>
 #'   add_sem_errorbar()
 #'
-#' energy %>%
-#'   tidyplot(x = energy, y = year, color = energy_type) %>%
+#' energy |>
+#'   tidyplot(x = energy, y = year, color = energy_type) |>
 #'   add_barstack_absolute(orientation = "y")
 #'
 #' @export
@@ -127,8 +60,8 @@ all_rows <- function(){
 #' @rdname all_rows
 #' @inheritParams dplyr::filter
 #' @export
-filter_rows <- function(..., .by = NULL){
-  . %>% dplyr::filter(..., .by = {{.by}}, .preserve = FALSE)
+filter_rows <- function(..., .by = NULL) {
+  function(x) { x |> dplyr::filter(..., .by = {{.by}}, .preserve = FALSE) }
 }
 #' @rdname all_rows
 #' @param n The number of rows to select. If not are supplied, `n = 1` will be
@@ -146,74 +79,74 @@ filter_rows <- function(..., .by = NULL){
 #'
 #' @examples
 #' # Highlight all animals
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = all_rows(),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' # Highlight 3 animals with the highest weight
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = max_rows(weight, n = 3),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' # Highlight 3 animals with the lowest weight
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = min_rows(weight, n = 3),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' # Highlight the first 3 animals in the dataset
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = first_rows(n = 3),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' # Highlight the last 3 animals in the dataset
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = last_rows(n = 3),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' # Highlight 3 random animals
-#' animals %>%
-#'  tidyplot(x = weight, y = size) %>%
-#'  add_data_points() %>%
+#' animals |>
+#'  tidyplot(x = weight, y = size) |>
+#'  add_data_points() |>
 #'  add_data_points(data = sample_rows(n = 3),
 #'   color = "red", shape = 1, size = 3)
 #'
 #' @export
-max_rows <- function(order_by, n, by = NULL, with_ties = TRUE, na_rm = FALSE){
-  . %>% dplyr::slice_max(order_by = {{order_by}}, n = n, by = {{by}}, with_ties = with_ties, na_rm = na_rm)
+max_rows <- function(order_by, n, by = NULL, with_ties = TRUE, na_rm = FALSE) {
+  function(x) { x |> dplyr::slice_max(order_by = {{order_by}}, n = n, by = {{by}}, with_ties = with_ties, na_rm = na_rm) }
 }
 #' @rdname all_rows
 #' @inheritParams dplyr::slice_min
 #' @export
-min_rows <- function(order_by, n, by = NULL, with_ties = TRUE, na_rm = FALSE){
-  . %>% dplyr::slice_min(order_by = {{order_by}}, n = n, by = {{by}}, with_ties = with_ties, na_rm = na_rm)
+min_rows <- function(order_by, n, by = NULL, with_ties = TRUE, na_rm = FALSE) {
+  function(x) { x |> dplyr::slice_min(order_by = {{order_by}}, n = n, by = {{by}}, with_ties = with_ties, na_rm = na_rm) }
 }
 #' @rdname all_rows
 #' @inheritParams dplyr::slice_head
 #' @export
-first_rows <- function(n, by = NULL){
-  . %>% dplyr::slice_head(n = n, by = {{by}})
+first_rows <- function(n, by = NULL) {
+  function(x) { x |> dplyr::slice_head(n = n, by = {{by}}) }
 }
 #' @rdname all_rows
 #' @inheritParams dplyr::slice_tail
 #' @export
-last_rows <- function(n, by = NULL){
-  . %>% dplyr::slice_tail(n = n, by = {{by}})
+last_rows <- function(n, by = NULL) {
+  function(x) { x |> dplyr::slice_tail(n = n, by = {{by}}) }
 }
 #' @rdname all_rows
 #' @inheritParams dplyr::slice_sample
 #' @export
-sample_rows <- function(n, by = NULL){
-  . %>% dplyr::slice_sample(n = n, by = {{by}})
+sample_rows <- function(n, by = NULL) {
+  function(x) { x |> dplyr::slice_sample(n = n, by = {{by}}) }
 }
 
 
@@ -272,18 +205,29 @@ mean_cl_boot <- function(x) {
 
 tidyplot_parser <- function(text) {
   # detect expressions by a leading and trailing "$"
-  # message(text) # for debugging
   if(any(stringr::str_detect(text, "^\\$.*\\$$"), na.rm = TRUE)) {
     out <- vector("expression", length(text))
     for (i in seq_along(text)) {
       # get rid of leading and trailing "$"
-      if (stringr::str_detect(text[[i]], "^\\$.*\\$$"))
-        expr <- parse(text = stringr::str_sub(text[[i]], 2, -2))
-      else
+      if (stringr::str_detect(text[[i]], "^\\$.*\\$$")) {
+        # check for valid plotmath expression
+        expr <- tryCatch(parse(text = stringr::str_sub(text[[i]], 2, -2)),
+                         error = function(e) {
+                           msg <- c("Invalid plotmath expression",
+                                    "x" = conditionMessage(e),
+                                    "i" = "Run `?plotmath` in the console for help.")
+                           cli::cli_abort(msg, call = NULL)
+                         })
+      } else {
         expr <- text[[i]]
-      out[[i]] <- if (length(expr) == 0)
-        NA
-      else expr[[1]]
+      }
+
+      if (length(expr) == 0) {
+        out[[i]] <- NA
+      } else {
+        out[[i]] <- expr[[1]]
+      }
+
     }
   } else {
     out <- text
@@ -298,7 +242,7 @@ tidyplot_parse_labels <- function() {
 }
 
 parent_function <- function(level = 0){
-  deparse(sys.call(-2 + level)) %>%
+  deparse(sys.call(-2 + level)) |>
     stringr::str_extract(pattern = "^[A-Z_a-z]*")
 }
 
@@ -328,10 +272,11 @@ extract_mapping <- function(plot) {
       if (x == "!!NA") return("!!NA")
       if (!x %in% colnames(plot$data)) cli::cli_abort("Variable '{x}' not found in supplied dataset")
       if (stringr::str_detect(x, "after_stat|after_scale|stage\\(")) return("continuous")
-      plot$data[[x]] %>% ggplot2::scale_type() %>% .[[1]]
+      out <- plot$data[[x]] |> ggplot2::scale_type()
+      out[[1]]
     })
   }
-  dplyr::tibble(aesthetic = c("x", "y", "colour", "fill", "group")) %>%
+  dplyr::tibble(aesthetic = c("x", "y", "colour", "fill", "group")) |>
     dplyr::mutate(
       variable = my_variable(aesthetic),
       scale_type = my_scale_type(variable)
@@ -348,7 +293,7 @@ get_variable <- function(plot, aesthetic) {
   m$variable[m$aesthetic == aesthetic]
 }
 
-is_discrete <- function(plot, aesthetic) { get_scale_type(plot, aesthetic) == "discrete" }
+is_discrete <- function(plot, aesthetic) { get_scale_type(plot, aesthetic) %in% c("ordinal", "discrete") }
 is_continuous <- function(plot, aesthetic) { get_scale_type(plot, aesthetic) == "continuous" }
 is_date <- function(plot, aesthetic) { get_scale_type(plot, aesthetic) == "date" }
 is_time <- function(plot, aesthetic) { get_scale_type(plot, aesthetic) == "time" }
@@ -422,6 +367,8 @@ check_tidyplot <- function(plot, arg = rlang::caller_arg(plot), call = rlang::ca
 # check_tidyplot(c(22,22))
 
 is_hex_vector <- function(x) {
+  # allow NA values
+  x <- x[!is.na(x)]
   all(
     is.character(x),
     stringr::str_detect(x, "[#]"),
@@ -452,7 +399,7 @@ get_layout_size <- function(plot, units = c("mm", "cm", "in")) {
         height <- grid::convertHeight(sum(gtab$heights) + ggplot2::unit(1, "mm"), unitTo = units, valueOnly = TRUE)
 
       dplyr::tibble(width = width, height = height)
-    }) %>%
+    }) |>
     dplyr::bind_rows()
 
   overall_width<- NA

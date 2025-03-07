@@ -9,7 +9,6 @@ add_violin(
   dodge_width = NULL,
   alpha = 0.3,
   saturation = 1,
-  draw_quantiles = NULL,
   trim = FALSE,
   linewidth = 0.25,
   scale = "width",
@@ -26,9 +25,6 @@ continuous axes.}
 \item{alpha}{A \code{number} between \code{0} and \code{1} for the opacity of an object. A value of \code{0} is completely transparent, \code{1} is completely opaque.}
 
 \item{saturation}{A \code{number} between \code{0} and \code{1} for the color saturation of an object. A value of \code{0} is completely desaturated (white), \code{1} is the original color.}
-
-\item{draw_quantiles}{If \code{not(NULL)} (default), draw horizontal lines
-at the given quantiles of the density estimate.}
 
 \item{trim}{If \code{TRUE} (default), trim the tails of the violins
 to the range of the data. If \code{FALSE}, don't trim the tails.}
@@ -48,25 +44,25 @@ A \code{tidyplot} object.
 Add violin plot
 }
 \examples{
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
   add_violin()
 
 # Changing arguments:
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
   add_violin(saturation = 0.6)
 
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
   add_violin(draw_quantiles = c(0.25, 0.5, 0.75))
 
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
   add_violin(trim = TRUE)
 
-study \%>\%
-  tidyplot(x = treatment, y = score, color = treatment) \%>\%
+study |>
+  tidyplot(x = treatment, y = score, color = treatment) |>
   add_violin(linewidth = 1)
 
 }
