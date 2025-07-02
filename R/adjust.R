@@ -25,6 +25,14 @@ ff_adjust_axis <- function(axis) {
   if (!is.null(plot$tidyplot$limits_x)) plot$tidyplot$padding_x <- c(0, 0)
   if (!is.null(plot$tidyplot$limits_y)) plot$tidyplot$padding_y <- c(0, 0)
 
+  # Set limits via coord_cartesian
+  if (!is.null(plot$tidyplot$limits_x) || !is.null(plot$tidyplot$limits_y)) {
+    suppressMessages(plot <- plot + ggplot2::coord_cartesian(
+      xlim = plot$tidyplot$limits_x,
+      ylim = plot$tidyplot$limits_y)
+      )
+  }
+
   # Adjust padding (aka expansion)
   if (axis == "x") {
     if (!is.na(padding[[1]])) plot$tidyplot$padding_x[[1]] <- padding[[1]]
@@ -88,11 +96,6 @@ ff_adjust_axis <- function(axis) {
           plot <- plot + ggplot2::scale_y_continuous(name = title, breaks = breaks, labels = labels, limits = NULL, expand = expand_y, transform = transform, ...)}
       }
     })
-
-    # Set limits via coord_cartesian
-    if (!is.null(plot$tidyplot$limits_x) || !is.null(plot$tidyplot$limits_y)) {
-      suppressMessages(plot <- plot + ggplot2::coord_cartesian(xlim = plot$tidyplot$limits_x, ylim = plot$tidyplot$limits_y))
-    }
     return(plot)
   }
 
@@ -103,9 +106,13 @@ ff_adjust_axis <- function(axis) {
     # cli::cli_alert_success("adjust_{axis}_axis: {.pkg discrete}")
     suppressMessages(
       if (axis == "x")
-        plot <- plot + ggplot2::scale_x_discrete(name = title, breaks = breaks, labels = labels, expand = ggplot2::waiver(), ...)
+        plot <- plot + ggplot2::scale_x_discrete(
+          name = title, breaks = breaks, labels = labels,
+          expand = ggplot2::waiver(), ...)
       else
-        plot <- plot + ggplot2::scale_y_discrete(name = title, breaks = breaks, labels = labels, expand = ggplot2::waiver(), ...)
+        plot <- plot + ggplot2::scale_y_discrete(
+          name = title, breaks = breaks, labels = labels,
+          expand = ggplot2::waiver(), ...)
     )
     return(plot)
   }
@@ -185,6 +192,9 @@ adjust_y_axis <- ff_adjust_axis("y")
 
 
 #' Adjust plot area size
+#' @param width Width of the plot area.
+#' @param height Height of the plot area.
+#' @param unit Unit of the plot area width and height.
 #' @inherit common_arguments
 #'
 #' @examples
@@ -195,13 +205,13 @@ adjust_y_axis <- ff_adjust_axis("y")
 #'   add_mean_bar(alpha = 0.4) |>
 #'   add_sem_errorbar()
 #'
-#' # Resize to 20 x 20 mm
+#' # Resize to 15 x 15 mm
 #' study |>
 #'   tidyplot(x = treatment, y = score, color = treatment) |>
 #'   add_data_points_beeswarm(shape = 1) |>
 #'   add_mean_bar(alpha = 0.4) |>
 #'   add_sem_errorbar() |>
-#'   adjust_size(width = 20, height = 20)
+#'   adjust_size(width = 15, height = 15)
 #'
 #' # Resize to 4 x 4 cm
 #' study |>
@@ -211,7 +221,8 @@ adjust_y_axis <- ff_adjust_axis("y")
 #'   add_sem_errorbar() |>
 #'   adjust_size(width = 4, height = 4, unit = "cm")
 #'
-#' # Remove absolute dimensions and take all available space. This is the ggplot2 default.
+#' # Remove absolute dimensions and take all available space.
+#' # This is the ggplot2 default.
 #' study |>
 #'   tidyplot(x = treatment, y = score, color = treatment) |>
 #'   add_data_points_beeswarm(shape = 1) |>
@@ -220,11 +231,20 @@ adjust_y_axis <- ff_adjust_axis("y")
 #'   adjust_size(width = NA, height = NA)
 #'
 #' @export
-adjust_size <- function(plot, width = 50, height = 50, unit = "mm") {
+adjust_size <- function(plot, width = NULL, height = NULL, unit = NULL) {
   plot <- check_tidyplot(plot)
-  # cli::cli_alert_success("adjust_size: {.arg width} = {width} {unit}, {.arg height} = {height} {unit}")
+
+  plot$tidyplot$width <- width %||% plot$tidyplot$width
+  plot$tidyplot$height <- height %||% plot$tidyplot$height
+  plot$tidyplot$unit <- unit %||% plot$tidyplot$unit
+
+  width <- plot$tidyplot$width
+  height <- plot$tidyplot$height
+  unit <- plot$tidyplot$unit
+
   if (!is.na(width)) width <- ggplot2::unit(width, unit)
   if (!is.na(height)) height <- ggplot2::unit(height, unit)
+
   plot + patchwork::plot_layout(widths = width, heights = height)
 }
 

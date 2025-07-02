@@ -131,6 +131,7 @@ add_reference_lines <- function(plot, x = NULL, y = NULL, linetype = "dashed", l
 #'
 #' @export
 add_data_labels <- function(plot, label, data = all_rows(), fontsize = 7,
+                            dodge_width = NULL, jitter_width = 0, jitter_height = 0, preserve = "total",
                             background = FALSE, background_color = "#FFFFFF", background_alpha = 0.6,
                             label_position = c("below", "above", "left", "right", "center"), ...) {
   plot <- check_tidyplot(plot)
@@ -160,14 +161,23 @@ add_data_labels <- function(plot, label, data = all_rows(), fontsize = 7,
     hjust <- 0.5
   }
 
+  dodge_width <- dodge_width %||% plot$tidyplot$dodge_width
+  position <- compute_position(plot = plot,
+                               dodge_width = dodge_width,
+                               jitter_width = jitter_width,
+                               jitter_height = jitter_height,
+                               preserve = preserve)
+
   plot +
     ggplot2::geom_label(data = data, ggplot2::aes(label = {{label}}), size = size,
                         fill = scales::alpha(background_color, background_alpha),
-                        vjust = vjust, hjust = hjust, label.size = NA, label.padding = label.padding, ...)
+                        vjust = vjust, hjust = hjust, linewidth = NA, label.padding = label.padding,
+                        position = position, ...)
 }
 #' @rdname add_data_labels
 #' @export
 add_data_labels_repel <- function(plot, label, data = all_rows(), fontsize = 7,
+                                  dodge_width = NULL, jitter_width = 0, jitter_height = 0, preserve = "total",
                                   segment.size = 0.2, box.padding = 0.2, max.overlaps = Inf,
                                   background = FALSE, background_color = "#FFFFFF", background_alpha = 0.6, ...) {
   plot <- check_tidyplot(plot)
@@ -175,16 +185,25 @@ add_data_labels_repel <- function(plot, label, data = all_rows(), fontsize = 7,
   if (!background) background_alpha <- 0
   label.padding <- ggplot2::unit(0.1, "lines")
 
+  dodge_width <- dodge_width %||% plot$tidyplot$dodge_width
+  position <- compute_position(plot = plot,
+                               dodge_width = dodge_width,
+                               jitter_width = jitter_width,
+                               jitter_height = jitter_height,
+                               preserve = preserve)
+
   plot + ggrepel::geom_label_repel(data = data, ggplot2::aes(label = {{label}}), size = size,
                                    segment.size = segment.size, box.padding = box.padding, max.overlaps = max.overlaps,
                                    fill = scales::alpha(background_color, background_alpha),
-                                   label.size = NA, label.padding = label.padding, ...)
+                                   label.size = NA, label.padding = label.padding, position = position,
+                                   seed = 42, ...)
 }
 
 
 #' Add annotation
-#' @param text Here goes the description.
-#' @param x,xmin,xmax,xend,y,ymin,ymax,yend Here goes the description.
+#' @param text String for annotation text.
+#' @param x,xmin,xmax,xend,y,ymin,ymax,yend Coordinates for the annotation.
+#' @param ... Arguments passed on to `ggplot2::annotate()`.
 #' @inherit common_arguments
 #'
 #' @examples
@@ -210,26 +229,26 @@ add_data_labels_repel <- function(plot, label, data = all_rows(), fontsize = 7,
 #'   add_annotation_line(x = 0, xend = Inf, y = 0, yend = Inf)
 #'
 #' @export
-add_annotation_text <- function(plot, text, x, y, fontsize = 7) {
+add_annotation_text <- function(plot, text, x, y, fontsize = 7, ...) {
   plot <- check_tidyplot(plot)
   # parse text
   text <- tidyplot_parser(as.character(text))
   plot + ggplot2::annotate("text", label = text, x = x, y = y,
-                           size = fontsize/ggplot2::.pt)
+                           size = fontsize/ggplot2::.pt, ...)
 }
 #' @rdname add_annotation_text
 #' @export
 add_annotation_rectangle <- function(plot, xmin, xmax, ymin, ymax,
-                                     fill = "#000000", color = NA, alpha = 0.1) {
+                                     fill = "#000000", color = NA, alpha = 0.1, ...) {
   plot <- check_tidyplot(plot)
   plot + ggplot2::annotate("rect", xmin = xmin, xmax = xmax,
                            ymin = ymin, ymax = ymax,
-                           fill = fill, color = color, alpha = alpha)
+                           fill = fill, color = color, alpha = alpha, ...)
 }
 #' @rdname add_annotation_text
 #' @export
-add_annotation_line <- function(plot, x, xend, y, yend, color = "#000000") {
+add_annotation_line <- function(plot, x, xend, y, yend, color = "#000000", ...) {
   plot <- check_tidyplot(plot)
-  plot + ggplot2::annotate("segment", x = x, xend = xend, y = y, yend = yend, color = color)
+  plot + ggplot2::annotate("segment", x = x, xend = xend, y = y, yend = yend, color = color, ...)
 }
 

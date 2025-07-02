@@ -4,23 +4,38 @@
 \alias{tidyplot}
 \title{Create a new tidyplot}
 \usage{
-tidyplot(data, ..., width = 50, height = 50, dodge_width = NULL)
+tidyplot(
+  data,
+  ...,
+  width = NULL,
+  height = NULL,
+  unit = NULL,
+  dodge_width = NULL,
+  my_style = NULL
+)
 }
 \arguments{
 \item{data}{A tidy \code{data.frame} to use for plotting.}
 
-\item{...}{Mappings for the \code{x} axis, \code{y} axis and \code{color}, see examples. Additional argument are passed to \code{ggplot2::aes()}.}
+\item{...}{Mappings for the \code{x} axis, \code{y} axis and \code{color}, see examples.
+Additional argument are passed to \code{ggplot2::aes()}.}
 
-\item{width}{Width of the plot area. Defaults to \code{50}.}
+\item{width}{Width of the plot area. The default (\code{NULL}) retrieves the setting from the
+\link[=tidyplots_options]{tidyplots options}, which defaults to \code{50}.}
 
-\item{height}{Height of the plot area. Defaults to \code{50}.}
+\item{height}{Height of the plot area. The default (\code{NULL}) retrieves the setting from the
+\link[=tidyplots_options]{tidyplots options}, which defaults to \code{50}.}
 
-\item{dodge_width}{For adjusting the distance between grouped objects. Defaults
-to \code{0.8} for plots with at least one discrete axis and \code{0} for plots with two
-continuous axes.}
-}
-\value{
-A \code{tidyplot} object.
+\item{unit}{Unit of the plot area width and height. The default (\code{NULL}) retrieves the setting from the
+\link[=tidyplots_options]{tidyplots options}, which defaults to \code{"mm"}.}
+
+\item{dodge_width}{For adjusting the distance between grouped objects.
+The default (\code{NULL}) retrieves the setting from the
+\link[=tidyplots_options]{tidyplots options}, which defaults to \code{0.8} for plots with
+at least one discrete axis and to \code{0} for plots with two continuous axes.}
+
+\item{my_style}{Styling function to apply to the plot. The default (\code{NULL}) retrieves the setting from the
+\link[=tidyplots_options]{tidyplots options}, which default to no additional styling.}
 }
 \description{
 Create a new tidyplot
@@ -37,7 +52,7 @@ study |>
 # Change plot area size
 study |>
   tidyplot(x = treatment, y = score, color = treatment,
-    width = 35, height = 35) |>
+    width = 25, height = 25) |>
   add_data_points_beeswarm()
 
 # Change dodge_width

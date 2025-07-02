@@ -8,7 +8,7 @@
 A data frame.
 }
 \source{
-\href{https://www.nature.com/articles/s41593-019-0385-4}{Bassoon proteinopathy drives neurodegeneration in multiple sclerosis}, Nature Neuroscience
+\href{https://www.nature.com/articles/s41593-019-0385-4}{Bassoon proteinopathy drives neurodegeneration in multiple sclerosis}, Nature Neuroscience 2019
 
 \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE104899}{GSE104899}, Gene Expression Omnibus
 }

@@ -221,10 +221,14 @@ add_curve_fit <- function(plot, dodge_width = NULL, method = "loess", linewidth 
 #'
 #' @export
 add_histogram <- function(plot, binwidth = NULL, bins = NULL, ...) {
+  args <- list(binwidth = binwidth, bins = bins, ...)
+  if (!is.null(args$color)) args$fill <- args$color
+  args$color <- NA
+
   plot <- check_tidyplot(plot)
   plot <-
     plot +
-    ggplot2::geom_histogram(color = NA, binwidth = binwidth, bins = bins, ...)
+    do.call(ggplot2::geom_histogram, args)
   # remove padding between bar and axis
   if (is_flipped(plot)) {
     plot <- plot |> adjust_x_axis(padding = c(0, NA), force_continuous = TRUE)
@@ -246,6 +250,36 @@ add_histogram <- function(plot, binwidth = NULL, bins = NULL, ...) {
 #'
 #' @export
 add <- .Primitive("+")
+
+
+#' Add ellipse
+#' @inherit common_arguments
+#' @param ... Arguments passed on to `ggplot2::stat_ellipse()`.
+#'
+#' @examples
+#' pca |>
+#'   tidyplot(x = pc1, y = pc2, color = group) |>
+#'   add_data_points() |>
+#'   add_ellipse()
+#'
+#' pca |>
+#'   tidyplot(x = pc1, y = pc2, color = group) |>
+#'   add_data_points() |>
+#'   add_ellipse(level = 0.75)
+#'
+#' pca |>
+#'   tidyplot(x = pc1, y = pc2, color = group) |>
+#'   add_data_points() |>
+#'   add_ellipse(type = "norm")
+#'
+#' @export
+add_ellipse <- function(plot, ...) {
+  plot <- check_tidyplot(plot)
+  plot <-
+    plot + ggplot2::stat_ellipse(...)
+  plot
+}
+
 
 # not exported
 add_geom <- function(plot, geom, rasterize = FALSE, rasterize_dpi = 300, level = 0) {

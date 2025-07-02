@@ -15,6 +15,12 @@ publication-ready plots for scientific papers. It allows to gradually
 add, remove and adjust plot components using a consistent and intuitive
 syntax.
 
+## Citation
+
+Engler, Jan Broder. 2025. “Tidyplots Empowers Life Scientists With Easy
+Code-Based Data Visualization.” *iMeta* e70018.
+<https://doi.org/10.1002/imt2.70018>
+
 ## Installation
 
 You can install the released version of tidyplots from
@@ -73,6 +79,7 @@ energy |>
   dplyr::filter(year %in% c(2005, 2010, 2015, 2020)) |> 
   tidyplot(y = energy, color = energy_source) |> 
   add_donut() |> 
+  adjust_size(width = 25, height = 25) |>
   split_plot(by = year)
 ```
 
@@ -140,6 +147,7 @@ gene_expression |>
   add_data_points_beeswarm() |> 
   add_test_asterisks(hide_info = TRUE) |> 
   remove_x_axis_title() |> 
+  adjust_size(width = 25, height = 25) |> 
   split_plot(by = external_gene_name)
 ```
 
